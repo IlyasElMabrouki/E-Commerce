@@ -16,11 +16,6 @@ const handler = async (req, res) => {
     }
     order.isPaid = true;
     order.paidAt = Date.now();
-    order.paymentResult = {
-      id: req.body.id,
-      status: req.body.status,
-      email_address: req.body.email_address,
-    };
     const paidOrder = await order.save();
     await db.disconnect();
     res.send({ message: 'order paid successfully', order: paidOrder });

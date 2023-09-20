@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { lineItems } = req.body;
+    const { lineItems, orderId } = req.body;
 
     if (!lineItems.length) {
       return res.status(400).json({ message: 'Bad Request' });
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     const session = await stripe.checkout.sessions.create({
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${req.headers.origin}/checkout/success?sessionsId={CHECKOUT_SESSION_ID}`,
+      success_url: `${req.headers.origin}/order_stripe/${orderId}`,
       cancel_url: req.headers.origin,
     });
 

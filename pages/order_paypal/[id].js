@@ -142,7 +142,7 @@ function OrderScreen() {
           details
         );
         dispatch({ type: 'PAY_SUCCESS', payload: data });
-        toast.success('Order is paid successgully');
+        toast.success('Order is paid successfully');
       } catch (err) {
         dispatch({ type: 'PAY_FAIL', payload: getError(err) });
         toast.error(getError(err));

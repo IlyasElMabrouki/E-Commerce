@@ -2,13 +2,12 @@ import { loadStripe } from '@stripe/stripe-js';
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
-import { Store } from '../../utils/Store';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useReducer, useContext } from 'react';
+import { useEffect, useReducer } from 'react';
 import { toast } from 'react-toastify';
 import Layout from '../../components/Layout';
 import { getError } from '../../utils/error';
@@ -49,8 +48,6 @@ function reducer(state, action) {
 }
 function OrderScreen() {
   const { data: session } = useSession();
-  const { state } = useContext(Store);
-  const { cart } = state;
 
   const { query } = useRouter();
   const orderId = query.id;
@@ -81,6 +78,18 @@ function OrderScreen() {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
+
+    const onApproved = async () => {
+      try {
+        dispatch({ type: 'PAY_REQUEST' });
+        const { data } = await axios.put(`/api/orders/${orderId}/pay`);
+        dispatch({ type: 'PAY_SUCCESS', payload: data });
+        toast.success('Order is paid successfully');
+      } catch (err) {
+        dispatch({ type: 'PAY_FAIL', payload: getError(err) });
+        toast.error(getError(err));
+      }
+    };
     if (
       !order._id ||
       successPay ||
@@ -94,6 +103,9 @@ function OrderScreen() {
       if (successDeliver) {
         dispatch({ type: 'DELIVER_RESET' });
       }
+    }
+    if (order.isPaid && !order.isDelivered) {
+      onApproved();
     }
   }, [order, orderId, successDeliver, successPay]);
   const {
@@ -134,7 +146,7 @@ function OrderScreen() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ lineItems }),
+        body: JSON.stringify({ lineItems, orderId }),
       }).then((res) => res.json());
 
       const stripe = await stripePromise;
@@ -142,14 +154,30 @@ function OrderScreen() {
       await stripe.redirectToCheckout({
         sessionId: session.id,
       });
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      dispatch({ type: 'PAY_FAIL', payload: getError(err) });
+      toast.error(getError(err));
+    }
+  }
+
+  async function deliverOrderHandler() {
+    try {
+      dispatch({ type: 'DELIVER_REQUEST' });
+      const { data } = await axios.put(
+        `/api/admin/orders/${order._id}/deliver`,
+        {}
+      );
+      dispatch({ type: 'DELIVER_SUCCESS', payload: data });
+      toast.success('Order is delivered');
+    } catch (err) {
+      dispatch({ type: 'DELIVER_FAIL', payload: getError(err) });
+      toast.error(getError(err));
     }
   }
 
   return (
     <Layout title={`Order ${orderId}`}>
-      <h1 className="mb-4 text-xl">{`Order ${orderId}`}</h1>
+      <h1 className="mb-4 text-xl">{`Order ${JSON.stringify(order)}`}</h1>
       {loading ? (
         <div>Loading...</div>
       ) : error ? (
@@ -256,7 +284,7 @@ function OrderScreen() {
                   <li>
                     <div className="w-full">
                       <button
-                        className="primary-button"
+                        className="primary-button w-full"
                         type="button"
                         onClick={checkout}
                       >
@@ -264,6 +292,17 @@ function OrderScreen() {
                       </button>
                     </div>
                     {loadingPay && <div>Loading...</div>}
+                  </li>
+                )}
+                {session.user.isAdmin && order.isPaid && !order.isDelivered && (
+                  <li>
+                    {loadingDeliver && <div>Loading...</div>}
+                    <button
+                      className="primary-button w-full"
+                      onClick={deliverOrderHandler}
+                    >
+                      Deliver Order
+                    </button>
                   </li>
                 )}
               </ul>
