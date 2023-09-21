@@ -146,7 +146,7 @@ function OrderScreen() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ lineItems, orderId }),
+        body: JSON.stringify({ lineItems, orderId, shippingPrice }),
       }).then((res) => res.json());
 
       const stripe = await stripePromise;
