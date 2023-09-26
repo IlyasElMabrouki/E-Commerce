@@ -110,7 +110,7 @@ export default function AdminOrderScreen() {
                           : 'not delivered'}
                       </td>
                       <td className="p-5">
-                        <Link href={`/order/${order._id}`} passHref>
+                        <Link href={`/order_${order.paymentMethod.toLowerCase()}/${order._id}`} passHref>
                           Details
                         </Link>
                       </td>

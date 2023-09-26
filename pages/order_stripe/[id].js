@@ -104,10 +104,10 @@ function OrderScreen() {
         dispatch({ type: 'DELIVER_RESET' });
       }
     }
-    if (order.isPaid && !order.isDelivered) {
+    if (query.sessionsId) {
       onApproved();
     }
-  }, [order, orderId, successDeliver, successPay]);
+  }, [order, orderId, successDeliver, successPay, query]);
   const {
     shippingAddress,
     paymentMethod,
@@ -177,7 +177,7 @@ function OrderScreen() {
 
   return (
     <Layout title={`Order ${orderId}`}>
-      <h1 className="mb-4 text-xl">{`Order ${JSON.stringify(order)}`}</h1>
+      <h1 className="mb-4 text-xl">{`Order ${orderId}`}</h1>
       {loading ? (
         <div>Loading...</div>
       ) : error ? (
@@ -229,7 +229,7 @@ function OrderScreen() {
                           className="flex items-center"
                         >
                           <Image
-                            src={item.image}
+                            src={item.image[0]}
                             alt={item.name}
                             width={50}
                             height={50}

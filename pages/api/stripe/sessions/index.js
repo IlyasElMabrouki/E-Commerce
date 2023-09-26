@@ -42,7 +42,7 @@ export default async function handler(req, res) {
       ],
       line_items: newLineItems,
       mode: 'payment',
-      success_url: `${req.headers.origin}/order_stripe/${orderId}`,
+      success_url: `${req.headers.origin}/order_stripe/${orderId}?sessionsId={CHECKOUT_SESSION_ID}`,
       cancel_url: req.headers.origin,
     });
 
