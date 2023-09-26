@@ -33,7 +33,8 @@ function reducer(state, action) {
       };
     case 'UPLOAD_FAIL':
       return { ...state, loadingUpload: false, errorUpload: action.payload };
-
+    case 'UPDATE':
+      return { ...state, status: 'Update' };
     default:
       return state;
   }
@@ -41,10 +42,11 @@ function reducer(state, action) {
 export default function AdminProductEditScreen() {
   const { query } = useRouter();
   const productId = query.id;
-  const [{ loading, error, loadingUpdate, loadingUpload }, dispatch] =
+  const [{ loading, error, loadingUpdate, loadingUpload, status }, dispatch] =
     useReducer(reducer, {
       loading: true,
       error: '',
+      status: 'Create',
     });
 
   const {
@@ -68,6 +70,9 @@ export default function AdminProductEditScreen() {
         setValue('brand', data.brand);
         setValue('countInStock', data.countInStock);
         setValue('description', data.description);
+        if (data.price != 0) {
+          dispatch({ type: 'UPDATE' });
+        }
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
@@ -82,13 +87,13 @@ export default function AdminProductEditScreen() {
     try {
       dispatch({ type: 'UPLOAD_REQUEST' });
       const files = Array.from(e.target.files);
-      console.log(e.target.files)
-      console.log(files)
-      if (!files) return
+      console.log(e.target.files);
+      console.log(files);
+      if (!files) return;
       const formData = new FormData();
-      files.map((file,index) => formData.append(`image${index}`, file))
-      const { data } = await axios.post("/api/admin/upload", formData);
-      console.log(data)
+      files.map((file, index) => formData.append(`image${index}`, file));
+      const { data } = await axios.post('/api/admin/upload', formData);
+      console.log(data);
       dispatch({ type: 'UPLOAD_SUCCESS' });
       setValue(imageField, data.images);
       toast.success('File uploaded successfully');
@@ -121,7 +126,6 @@ export default function AdminProductEditScreen() {
         description,
       });
       dispatch({ type: 'UPDATE_SUCCESS' });
-      toast.success('Product updated successfully');
       router.push('/admin/products');
     } catch (err) {
       dispatch({ type: 'UPDATE_FAIL', payload: getError(err) });
@@ -292,7 +296,7 @@ export default function AdminProductEditScreen() {
               </div>
               <div className="mb-4">
                 <button disabled={loadingUpdate} className="primary-button">
-                  {loadingUpdate ? 'Loading' : 'Update'}
+                  {loadingUpdate ? 'Loading' : status}
                 </button>
               </div>
               <div className="mb-4">
