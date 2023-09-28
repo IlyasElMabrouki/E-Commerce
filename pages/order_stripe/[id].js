@@ -1,4 +1,5 @@
 import { loadStripe } from '@stripe/stripe-js';
+import StarRating from '../../components/StarRating';
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
@@ -215,8 +216,11 @@ function OrderScreen() {
                 <thead className="border-b">
                   <tr>
                     <th className="px-5 text-left">Item</th>
-                    <th className="    p-5 text-right">Quantity</th>
-                    <th className="  p-5 text-right">Price</th>
+                    {order.isPaid && order.isDelivered && (
+                      <th className="p-5 text-right">Ranking</th>
+                    )}
+                    <th className="p-5 text-right">Quantity</th>
+                    <th className="p-5 text-right">Price</th>
                     <th className="p-5 text-right">Subtotal</th>
                   </tr>
                 </thead>
@@ -241,7 +245,16 @@ function OrderScreen() {
                           {item.name}
                         </Link>
                       </td>
-                      <td className=" p-5 text-right">{item.quantity}</td>
+                      {order.isPaid && order.isDelivered && (
+                        <td>
+                          <StarRating
+                            rating="3"
+                            numReviews="0"
+                            productId = {item._id}
+                          />
+                        </td>
+                      )}
+                      <td className="p-5 text-right">{item.quantity}</td>
                       <td className="p-5 text-right">${item.price}</td>
                       <td className="p-5 text-right">
                         ${item.quantity * item.price}
