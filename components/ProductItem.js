@@ -22,9 +22,8 @@ export default function ProductItem({ product, addToCartHandler }) {
           <h2 className="text-lg">{product.name}</h2>
         </Link>
         <StarRating
-          rating={product.rating}
-          numReviews={product.numReviews}
           productId={product._id}
+          showReview="true"
         />
         <p>${product.price}</p>
         <button

@@ -4,7 +4,7 @@ import db from '../../../../utils/db';
 
 export default async function handler(req, res) {
   const user = await getToken({ req });
-  const { rating } = req.body;
+  const { rate } = req.body;
   if (!user) {
     return res.status(401).send('signin required');
   }
@@ -15,10 +15,8 @@ export default async function handler(req, res) {
 
   await db.connect();
   const product = await Product.findById(req.query.id);
-  console.log(req.body);
   if (product) {
-    product.rating = rating;
-    product.numReviews++;
+    product.rating = ( product.rating * product.numReviews + rate) / ++product.numReviews;
     await product.save();
     await db.disconnect();
     res.send({ message: 'Product updated successfully' });

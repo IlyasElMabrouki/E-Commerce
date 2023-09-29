@@ -1,25 +1,42 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export default function StarRating({ rate, numReviews, productId }) {
-  const [rating, setRating] = useState(rate);
+export default function StarRating({ productId, show, showReview }) {
+  const [rate, setRate] = useState(0);
+  const [reviews, setReviews] = useState(0);
+
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const response = await fetch(`/api/products/${productId}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const product = await response.json();
+        setRate(product.rating);
+        setReviews(product.numReviews);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    getProduct();
+  }, [productId]);
 
   const clickHandler = async (index) => {
-    setRating(index + 1);
-    const { message } = await fetch(`/api/starRating/${productId}`, {
+    setRate(index + 1);
+    await fetch(`/api/starRating/${productId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ rating }),
+      body: JSON.stringify({ rate: index + 1 }),
     }).then((res) => res.json());
-    console.log(message);
   };
 
   return (
     <div className="flex m-2 gap-1 items-center">
       {[...Array(5)].map((_, index) => {
         return (
-          <button key={index} onClick={() => clickHandler(index)}>
+          <button key={index} onClick={() => show && clickHandler(index)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -27,7 +44,7 @@ export default function StarRating({ rate, numReviews, productId }) {
               strokeWidth={0.5}
               stroke="currentColor"
               className={
-                index + 1 <= rating
+                index + 1 <= rate
                   ? 'fill-yellow-500  text-yellow-500 w-6 h-6'
                   : 'fill-white w-6 h-6'
               }
@@ -41,7 +58,7 @@ export default function StarRating({ rate, numReviews, productId }) {
           </button>
         );
       })}
-      {numReviews > 0 && <p>{numReviews + ' reviews'}</p>}
+      {showReview && <p>{reviews + ' reviews'}</p>}
     </div>
   );
 }

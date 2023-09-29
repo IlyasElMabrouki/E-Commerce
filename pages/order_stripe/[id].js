@@ -248,9 +248,8 @@ function OrderScreen() {
                       {order.isPaid && order.isDelivered && (
                         <td>
                           <StarRating
-                            rating="3"
-                            numReviews="0"
                             productId = {item._id}
+                            show="true"
                           />
                         </td>
                       )}
