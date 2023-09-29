@@ -85,10 +85,8 @@ function OrderScreen() {
         dispatch({ type: 'PAY_REQUEST' });
         const { data } = await axios.put(`/api/orders/${orderId}/pay`);
         dispatch({ type: 'PAY_SUCCESS', payload: data });
-        toast.success('Order is paid successfully');
       } catch (err) {
         dispatch({ type: 'PAY_FAIL', payload: getError(err) });
-        toast.error(getError(err));
       }
     };
     if (
@@ -169,10 +167,8 @@ function OrderScreen() {
         {}
       );
       dispatch({ type: 'DELIVER_SUCCESS', payload: data });
-      toast.success('Order is delivered');
     } catch (err) {
       dispatch({ type: 'DELIVER_FAIL', payload: getError(err) });
-      toast.error(getError(err));
     }
   }
 
@@ -217,11 +213,11 @@ function OrderScreen() {
                   <tr>
                     <th className="px-5 text-left">Item</th>
                     {order.isPaid && order.isDelivered && (
-                      <th className="p-5 text-right">Ranking</th>
+                      <th className="p-5 text-left">Ranking</th>
                     )}
-                    <th className="p-5 text-right">Quantity</th>
-                    <th className="p-5 text-right">Price</th>
-                    <th className="p-5 text-right">Subtotal</th>
+                    <th className="p-5 text-center">Quantity</th>
+                    <th className="p-5 text-center">Price</th>
+                    <th className="p-5 text-center">Subtotal</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -242,20 +238,17 @@ function OrderScreen() {
                               height: 'auto',
                             }}
                           ></Image>
-                          {item.name}
+                          <p className='pl-5'>{item.name}</p>
                         </Link>
                       </td>
                       {order.isPaid && order.isDelivered && (
-                        <td>
-                          <StarRating
-                            productId = {item._id}
-                            show="true"
-                          />
+                        <td className="text-center">
+                          <StarRating productId={item._id} />
                         </td>
                       )}
-                      <td className="p-5 text-right">{item.quantity}</td>
-                      <td className="p-5 text-right">${item.price}</td>
-                      <td className="p-5 text-right">
+                      <td className="p-5 text-center">{item.quantity}</td>
+                      <td className="p-5 text-center">${item.price}</td>
+                      <td className="p-5 text-center">
                         ${item.quantity * item.price}
                       </td>
                     </tr>

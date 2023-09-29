@@ -1,6 +1,7 @@
 import Product from '../../models/Product';
 import User from '../../models/User';
 import Order from '../../models/Order';
+import Rate from '../../models/Rate';
 import data from '../../utils/data';
 import db from '../../utils/db';
 
@@ -11,6 +12,7 @@ const handler = async (req, res) => {
   await Product.deleteMany();
   await Product.insertMany(data.products);
   await Order.deleteMany();
+  await Rate.deleteMany();
   await db.disconnect();
   res.send({ message: 'seeded successfully' });
 };

@@ -8,6 +8,7 @@ import { useEffect, useReducer } from 'react';
 import { toast } from 'react-toastify';
 import Layout from '../../components/Layout';
 import { getError } from '../../utils/error';
+import StarRating from '../../components/StarRating';
 
 function reducer(state, action) {
   switch (action.type) {
@@ -208,9 +209,12 @@ function OrderScreen() {
                 <thead className="border-b">
                   <tr>
                     <th className="px-5 text-left">Item</th>
-                    <th className="    p-5 text-right">Quantity</th>
-                    <th className="  p-5 text-right">Price</th>
-                    <th className="p-5 text-right">Subtotal</th>
+                    {order.isPaid && order.isDelivered && (
+                      <th className="p-5 text-left">Ranking</th>
+                    )}
+                    <th className="p-5 text-center">Quantity</th>
+                    <th className="p-5 text-center">Price</th>
+                    <th className="p-5 text-center">Subtotal</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -231,12 +235,17 @@ function OrderScreen() {
                               height: 'auto',
                             }}
                           ></Image>
-                          {item.name}
+                          <p className="pl-5">{item.name}</p>
                         </Link>
                       </td>
-                      <td className=" p-5 text-right">{item.quantity}</td>
-                      <td className="p-5 text-right">${item.price}</td>
-                      <td className="p-5 text-right">
+                      {order.isPaid && order.isDelivered && (
+                        <td className="text-center">
+                          <StarRating productId={item._id} />
+                        </td>
+                      )}
+                      <td className="p-5 text-center">{item.quantity}</td>
+                      <td className="p-5 text-center">${item.price}</td>
+                      <td className="p-5 text-center">
                         ${item.quantity * item.price}
                       </td>
                     </tr>

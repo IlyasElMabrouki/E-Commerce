@@ -64,7 +64,7 @@ function CartScreen() {
                             height: 'auto',
                           }}
                         ></Image>
-                        {item.name}
+                        <p className="pl-5">{item.name}</p>
                       </Link>
                     </td>
                     <td className="p-5 text-right">
