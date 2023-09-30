@@ -71,10 +71,6 @@ export default function Layout({ title, children }) {
             </form>
             
             <div className="flex items-center z-10">
-              <Link href="/category/Pants" className="p-2">Electronics</Link>
-              <Link href="/category/Shirts" className="p-2">Fashion</Link>
-              <Link href="/category/Pants" className="p-2">Furniture</Link>
-              <Link href="/category/Shirts" className="p-2">Health</Link>
               <Link href="/cart" className="p-2">
                 Cart
                 {cartItemsCount > 0 && (
