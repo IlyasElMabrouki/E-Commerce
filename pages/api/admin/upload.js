@@ -12,7 +12,7 @@ const readFile = (req,saveLocally) => {
   const options = {};
   if (saveLocally) {
     options.uploadDir = path.join(process.cwd(), "/public/images");
-    options.filename = (name, ext, path, form) => {
+    options.filename = (name, ext, path) => {
       return Date.now().toString() + "_" + path.originalFilename;
     };
   }
