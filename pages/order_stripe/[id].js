@@ -127,7 +127,7 @@ function OrderScreen() {
       await Promise.all(
         orderItems.map(async (p) => {
           const response = await axios.post(
-            'http://localhost:3000//api/stripe/createProduct',
+            '/api/stripe/createProduct',
             {
               name: p.name,
               price: p.price,
